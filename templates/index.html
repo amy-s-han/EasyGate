@@ -9,13 +9,18 @@
 
 		// Send a json message
         socket.on('connect', function() {
-            socket.emit('flight info query', { flightnumber: '1988'} );
+            socket.emit('flight info query', { flightnumber: '198800000000'} );
         });
 
 
         // Receive a json message
     	socket.on('my event', function(msg) {
             console.log(msg.data);
+        });
+
+        
+        socket.on('flight info query fail', function(msg) {
+            console.log(msg.error);
         });
 
 	</script>

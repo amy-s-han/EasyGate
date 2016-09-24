@@ -7,8 +7,6 @@ import config
 
 
 app = Flask(__name__)
-
-app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 deltaAPIBaseUrl = 'https://demo30-test.apigee.net/v1/hack/'
@@ -21,7 +19,7 @@ totalOverHeadVolume = 0
 typeToVolumeMap = []
 
 # Current flight number
-flightNumber = 1988
+flightNumber = 19811111118
 
 # Current time
 now = datetime.datetime.now()
@@ -36,16 +34,26 @@ def index():
 @socketio.on('flight info query')
 def handle_my_flight_info_query(json):
    	flightnumber = json['flightnumber']
-   	print getAircraftType(getFlightStatus(flightnumber))
+   	flightStatusJSON = getFlightStatus(flightnumber)
+   	if flightStatusJSON != None:
+   		aircraftType = getAircraftType(flightStatusJSON)
+   	else:
+   		emit('flight info query fail', { "error": "That flight number does not exist"})
 
 def getFlightStatus(flightNumber):
 	date = now.strftime("%Y-%m-%d")
 	url = deltaAPIBaseUrl + "status?flightNumber=" + flightNumber + "&flightOriginDate=" + date + "&apikey=" + apiKey
 	print url
 	response = urllib2.urlopen(url)
-	data = response.read()
-	j = json.loads(data)
-	return j
+	if response.getcode() == 200:
+		rawData = response.read()
+		jsonData = json.loads(rawData)
+		status = jsonData['flightStatusResponse']['status']
+		if status == "FAIL":
+			return None
+		return jsonData
+	else:
+		return None
 
 def getAircraftType(j):
 	equipmentType = j['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['equipmentType']
