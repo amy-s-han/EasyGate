@@ -16,10 +16,36 @@ currentOverHeadVolume = 0
 totalOverHeadVolume = 0
 
 # Dict to store type to volume mapping
-typeToVolumeMap = []
+simpleBinDims = dict()
+
+simpleBinDims["M90"] = (55,15,12)                              
+simpleBinDims["M88"] = (54,20,11)                              
+simpleBinDims["738"] = (58,15,12)
+simpleBinDims["73H"] = (58,15,12)
+simpleBinDims["73W"] = (58,15,12)
+simpleBinDims["739"] = (58,15,12)                                                                                                                            
+simpleBinDims["752"] = (58,15,12)
+simpleBinDims["7S8"] = (58,15,12)
+simpleBinDims["753"] = (58,15,12)                                                                                
+simpleBinDims["757"] = (58,15,12)
+simpleBinDims["75W"] = (58,15,12)                                                                                                                                                                                                                                                                                                                                
+simpleBinDims["76W"] = (40,14,13)
+simpleBinDims["763"] = (40,14,13)
+simpleBinDims["764"] = (40,14,13)                                  
+simpleBinDims["773"] = (42,20,18)
+simpleBinDims["777"] = (42,20,18)                                
+simpleBinDims["AT7"] = (42,8 ,14)                                  
+simpleBinDims["CR7"] = (43,16,8 )                                  
+simpleBinDims["CRJ"] = (43,16,8 )                                  
+simpleBinDims["EM2"] = (31,16,8 )                                  
+simpleBinDims["RJ9"] = (42,12,12)                                  
+simpleBinDims["ERJ"] = (63,20,9 )                                  
+simpleBinDims["ER3"] = (63,20,9 )                                  
+simpleBinDims["E70"] = (24,16,10)        
+simpleBinDims["E75"] = (24,16,10)
 
 # Current flight number
-flightNumber = 19811111118
+flightNumber = 1988
 
 # Current time
 now = datetime.datetime.now()
@@ -31,14 +57,19 @@ if __name__ == '__main__':
 def index():
     return render_template('index.html')
 
-@socketio.on('flight info query')
+@socketio.on('flight_info_query')
 def handle_my_flight_info_query(json):
    	flightnumber = json['flightnumber']
    	flightStatusJSON = getFlightStatus(flightnumber)
    	if flightStatusJSON != None:
    		aircraftType = getAircraftType(flightStatusJSON)
+   		if aircraftType in simpleBinDims:	
+   			print aircraftType, " has these dimensions: ", simpleBinDims[aircraftType]
+   		else:
+   			emit('flight_info_query_fail', { "error": "No dimension info on that flight's aircraft"})
+   		#print aircraftType, dim 
    	else:
-   		emit('flight info query fail', { "error": "That flight number does not exist"})
+   		emit('flight_info_query_fail', { "error": "That flight number does not exist"})
 
 def getFlightStatus(flightNumber):
 	date = now.strftime("%Y-%m-%d")
@@ -56,6 +87,6 @@ def getFlightStatus(flightNumber):
 		return None
 
 def getAircraftType(j):
-	equipmentType = j['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['equipmentType']
+	equipmentType = j['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['equipmentCodeDelta']
 	return equipmentType
 
