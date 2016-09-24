@@ -8,12 +8,12 @@
 		var socket = io.connect('http://' + document.domain + ':' + location.port);
 
 		// Send a json message
-   	 	socket.on('connect', function() {
+		socket.on('connect', function() {
     	    socket.emit('my event', {data: 'I\'m connected!'});
     	});
 
 
-   	 	// Receive a json message
+        // Receive a json message
     	socket.on('my event', function(msg) {
             console.log(msg.data);
         });
