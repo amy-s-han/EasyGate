@@ -17,6 +17,42 @@
 	max-height:100%;
 }
 
-.deltablue{
-	background-color: #003466;
+.delta-blue {
+	background-color: #003466 !important;
+}
+
+.delta-red {
+	background-color: #e01a33 !important;
+}
+
+.delta-light-blue {
+	background-color: #22659c !important;
+}
+
+.delta-medium-blue {
+	background-color: #123d65 !important;
+}
+
+.delta-dark-red {
+	background-color: #991932 !important;
+}
+
+.delta-blue-text {
+	color: #003466 !important;
+}
+
+.delta-red-text {
+	color: #e01a33 !important;
+}
+
+.delta-dark-red-text {
+	color: #991932 !important;
+}
+
+.delta-light-blue-text {
+	color: #22659c !important;
+}
+
+.delta-medium-blue-text {
+	color: #123d65 !important;
 }
