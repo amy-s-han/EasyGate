@@ -5,29 +5,15 @@
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
 	<script type="text/javascript" charset="utf-8">
 
-<<<<<<< HEAD
-		var socket = io.connect('http://' + document.domain + ':' + location.port);
-
-		// Send a json message
-        socket.on('connect', function() {
-            socket.emit('my event', {data: 'I\'m connected!'});
-=======
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
 		// Send a json message
         socket.on('connect', function() {
             socket.emit('flight_info_query', { flightnumber: '1988'} );
->>>>>>> 0b9b8c8ca28997cdaee066be79f9e34aa396a265
         });
 
 
         // Receive a json message
-<<<<<<< HEAD
-    	socket.on('my event', function(msg) {
-            console.log(msg.data);
-        });
-
-=======
     	socket.on('my_event', function(msg) {
             console.log(msg.data);
         });
@@ -36,8 +22,7 @@
         socket.on('flight_info_query_fail', function(msg) {
             console.log(msg.error);
         });
-
->>>>>>> 0b9b8c8ca28997cdaee066be79f9e34aa396a265
+        
 	</script>
 
 </head>
