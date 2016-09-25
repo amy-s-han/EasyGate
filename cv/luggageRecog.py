@@ -6,32 +6,30 @@ import sys
 sys.path.append('../cvk2')
 import cvk2
 import microsoftCVHelpers as msCV
-import json
 
 
 # Variables
 
 _key = 'e80f8ece393f4eebb3d98b0bb36f04d0'
 
+bagTypes = ['bag', 'backpack', 'bags', 'handbag', 'accessory']
+luggageTypes = ['suitcase', 'luggage'] + bagTypes
+bagMotions = ['holding', 'carrying']
+
+
 if __name__ == "__main__":
 
-	orig = cv2.imread('testPictures/manWithSuitcase0.jpg')
+	orig = cv2.imread('testPictures/womanWithBackpackSide.jpg')
 
 	h = orig.shape[0] #get height
 	w = orig.shape[1] #get width
 	# cvk2.labelAndWaitForKey(orig, 'Original')
 
 	# Load raw image file into memory
-	pathToFileInDisk = 'testPictures/noisyManWithSuitcase.jpg'
+	pathToFileInDisk = 'testPictures/womanWithBackpackSide.jpg'
 	with open( pathToFileInDisk, 'rb' ) as f:
 	    data = f.read()
 	   
-	print "TYPE OF DATA: ", type(data)
-
-	pathToFileInDisk = 'testPictures/manWithSuitcase0.jpg'
-	with open( pathToFileInDisk, 'rb' ) as f:
-	    data = f.read()
-	    
 	# Computer Vision parameters
 	params = { 'visualFeatures' : 'Categories, Tags, Description, Faces'} 
 
@@ -41,10 +39,9 @@ if __name__ == "__main__":
 
 	json = None
 
-	result = msCV.processRequest( json, data, headers, params )
+	result = msCV.processRequest(json, data, headers, params )
 
 	if result is not None:
-		print result
 
 		# Load the original image, fetched from the URL
 		data8uint = np.fromstring( data, np.uint8 ) # Convert string to an unsigned int array
@@ -54,26 +51,50 @@ if __name__ == "__main__":
 		tags = sorted(result['tags'], key=lambda x: x['confidence'])
 
 		description = result['description']
+		caption = description['captions'][0]['text']
 
-		print "\n\nNow tag: \n\n", tags
-
-		print "\n\nDescription: \n\n", description
-
-		print "\n\n", description['captions'][0]['text']
+		print "\n\n", caption
 		print "\n\n", description['tags']
 
-		for i in description['tags']:
-			print i
+		luggagePresent = []
+		bagBool = False
+		suitcaseBool = False
 
+
+		for i in caption.split():
+			if i in bagMotions:
+				bagBool = True
+				break
+
+			elif i in luggageTypes:
+				if i in bagTypes:
+					bagBool = True
+					break
+
+				else:
+					suitcaseBool = True
+
+
+		if not bagBool and not suitcaseBool:
+			for i in description['tags']:
+
+				if i in luggageTypes:
+					if i in bagTypes:
+						bagBool = True
+						print "bag true"
+
+						break
+					suitcaseBool = True
+					print "suitcase true"
+
+					break
+
+		if bagBool:
+			luggagePresent.append("bag")
+		if suitcaseBool:
+			luggagePresent.append("suitcase")
 		
-		msCV.renderResultOnImage( result, img )
 
-		# in reverse order: lowest confidence -> highest confidence
-		tags = sorted(result['tags'], key=lambda x: x['confidence'])
-
-		print "\n\nNow: \n\n", tags
-
-		# ig, ax = plt.subplots(figsize=(15, 20))
-		# ax.imshow( img )
+		print luggagePresent
 
 		cvk2.labelAndWaitForKey(img, 'img')

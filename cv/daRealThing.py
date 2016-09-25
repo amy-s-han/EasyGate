@@ -1,23 +1,31 @@
 #!/usr/bin/env python
-import numpy as np
-import cv2
-import utils
-import urllib 
 import sys
 sys.path.append('../cvk2')
 import cvk2
+import cv2
+import httplib
 import microsoftCVHelpers as msCV
+import numpy as np
+import requests
+import socket
 import threading
+import urllib
+import utils
+ 
 
+# global vars - yea i know that the variable names aren't consistent...
 
-luggageTypes = ['suitcase', 'backpack', 'bag']
-bagTypes = ['bag', 'bags', 'handbag']
+bagTypes = ['bag', 'backpack', 'bags', 'handbag', 'accessory']
+luggageTypes = ['suitcase', 'luggage'] + bagTypes
+bagMotions = ['holding', 'carrying']
+
 _key = 'e80f8ece393f4eebb3d98b0bb36f04d0'
-NUM_CAMS = 2
+NUM_CAMS = 1
+webpageIP = 'http://128.61.66.76:5000'
+# webpageIP = 'http://143.215.102.40:5000'
 
 
 def processImages(img):
-	print "here in processImages"
 	# Computer Vision parameters
 	params = { 'visualFeatures' : 'Categories, Tags, Description, Faces'} 
 
@@ -28,18 +36,12 @@ def processImages(img):
 	json = None
 
 	img_str = cv2.imencode('.jpg', img)[1].tostring()
+	result = msCV.processRequest( json, img_str, headers, params)
 
-	result = msCV.processRequest( json, img_str, headers, params )
-
-	if result is not None:
-		print result
-	
 	return result
 
 def idLuggage(img):
-	print "here in idLuggage"
-	luggagePresent = []
-
+	luggagePresent = ""
 	msResults = processImages(img)
 
 	if msResults is not None:
@@ -47,65 +49,134 @@ def idLuggage(img):
 		# in reverse order: lowest confidence -> highest confidence
 		tags = sorted(msResults['tags'], key=lambda x: x['confidence'])
 		
-		print "\n\nNow tag: \n\n", tags
-
 		description = msResults['description']
+		caption = description['captions'][0]['text']	
 
+		bagBool = False
+		suitcaseBool = False
 
-		print "\n\nDescription: \n\n", description
-
-		print "\n\n", description['captions'][0]['text']
-		print "\n\n", description['tags']
-
-		for i in description['tags']:
-			print i
+		for i in caption.split():
 
 			if i in luggageTypes:
 				if i in bagTypes:
-					luggagePresent.append(i)
+					bagBool = True
 					break
-				luggagePresent.append(i)
-				break
+
+				else:
+					suitcaseBool = True
+
+
+		if not bagBool and not suitcaseBool:
+			for i in description['tags']:
+				print i
+
+				if i in luggageTypes:
+					if i in bagTypes:
+						bagBool = True
+						print "bag true"
+
+						break
+					suitcaseBool = True
+					print "suitcase true"
+
+					break
+
+		if bagBool:
+			luggagePresent = "bag"
+		if suitcaseBool:
+			luggagePresent = "suitcase"
+		
+
+		print "The luggage present is: ", luggagePresent
 
 	return luggagePresent
 
 
+def sendToTicketAgent(luggagePresent):
+	# POST. "/submitCVResult" 
+	print "POSTING TO TICKET AGENT"
+
+	ticketURL = webpageIP + "/submitCVResult"
+
+	if luggagePresent is None or luggagePresent == '':
+		luggagePresent.append("no luggage detected")
+
+	retries = 0
+	result = None
+
+	while True:
+
+		payload = '{"result": "' + luggagePresent + '"}'
+		headers = {'content-type': "application/json", 'cache-control': "no-cache",}
+		response = requests.request("POST", ticketURL, data = payload, headers = headers)
+
+		if response.status_code == 429: 
+
+			print( "Message: %s" % ( response.json()['error']['message'] ) )
+
+			if retries <= _maxNumRetries: 
+				time.sleep(1) 
+				retries += 1
+				continue
+			else: 
+				print( 'Error: failed after retrying!' )
+			break
+
+		elif response.status_code == 200 or response.status_code == 201:
+
+			print "success!!!\n"
+		else:
+			print( "Error code: %d" % ( response.status_code ) )
+			print( "Message: %s" % ( response.json()['error']['message'] ) )
+
+		break
+        
 def runStream(tid, streamURL, debug = False):
 	print "Hi I'm a thread with tid: ", tid, " and url: ", streamURL
 
 	stream = urllib.urlopen(streamURL)
 	bytes = ''
 
+	ip = "0.0.0.0"
+	port = 5005
+
+	sock = socket.socket(socket.AF_INET, # Internet
+	         socket.SOCK_DGRAM) # UDP
+	sock.bind((ip, port))
+	sock.setblocking(0)
+
 	print "here2"
 
 	while True:
-	    bytes += stream.read(1024)
+		bytes += stream.read(1024)
 
-	    a = bytes.find('\xff\xd8')
-	    b = bytes.find('\xff\xd9')
+		a = bytes.find('\xff\xd8')
+		b = bytes.find('\xff\xd9')
 
-	    if a != -1 and b != -1:
-	        jpg = bytes[a:b + 2]
-	        bytes= bytes[b + 2:]
-	        img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
+		if a != -1 and b != -1:
+			jpg = bytes[a:b + 2]
+			bytes= bytes[b + 2:]
+			img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
 
-	        cv2.imshow('img ' + str(tid), img)
+			cv2.imshow('img ' + str(tid), img)
 
-	        # If detect ticket scan
+			# Check to see if the ticket agent has scanned a ticket:
+			try:
+				data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+				if data == "TAKEPIC": # ticket was scanned! Go process the picture!
+					# print "hi"
+					luggagePresent = idLuggage(img)
+					sendToTicketAgent(luggagePresent)
+			except:
+				pass
 
-	        # Fake ticket scan with enter for now
-	        if cv2.waitKey(1) == 32:
-	        	#ticket was scanned! Go process the picture!
-	        	luggagePresent = idLuggage(img)
-
-	        # to exit
-	        if cv2.waitKey(1) == 27:
-	            exit(0)   
+			# to exit press ESC!
+			if cv2.waitKey(1) == 27:
+				print "you tried to exit........"
+				exit(0)   
 
 	source.release()
 	cv2.destroyAllWindows()
-	print "here"
-
 
 if __name__ == "__main__":
 
@@ -116,6 +187,7 @@ if __name__ == "__main__":
 		worker.daemon = False
 		worker.start()
 
-	msResults = None
+	if cv2.waitKey(1) == 27:
+		exit(0)
 
 	
