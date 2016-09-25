@@ -10,8 +10,10 @@ import microsoftCVHelpers as msCV
 import threading
 
 
-luggageTypes = ['suitcase', 'backpack']
+luggageTypes = ['suitcase', 'backpack', 'bag']
+bagTypes = ['bag', 'bags', 'handbag']
 _key = 'e80f8ece393f4eebb3d98b0bb36f04d0'
+NUM_CAMS = 2
 
 
 def processImages(img):
@@ -31,20 +33,7 @@ def processImages(img):
 
 	if result is not None:
 		print result
-
-		# Load the original image, fetched from the URL
-		# data8uint = np.fromstring( data, np.uint8 ) # Convert string to an unsigned int array
-		# img = cv2.cvtColor( cv2.imdecode( data8uint, cv2.IMREAD_COLOR ), cv2.COLOR_BGR2RGB )
-
-		# in reverse order: lowest confidence -> highest confidence
-		# tags = sorted(result['tags'], key=lambda x: x['confidence'])
-
-		# print "\n\nNow: \n\n", tags
-
-		# ig, ax = plt.subplots(figsize=(15, 20))
-		# ax.imshow( img )
-		# cvk2.labelAndWaitForKey(img, 'img')
-
+	
 	return result
 
 def idLuggage(img):
@@ -52,9 +41,8 @@ def idLuggage(img):
 	luggagePresent = []
 
 	msResults = processImages(img)
-	luggagePresent = None
-	
-	if msResults is not []:
+
+	if msResults is not None:
 
 		# in reverse order: lowest confidence -> highest confidence
 		tags = sorted(msResults['tags'], key=lambda x: x['confidence'])
@@ -73,7 +61,11 @@ def idLuggage(img):
 			print i
 
 			if i in luggageTypes:
+				if i in bagTypes:
+					luggagePresent.append(i)
+					break
 				luggagePresent.append(i)
+				break
 
 	return luggagePresent
 
@@ -117,9 +109,9 @@ def runStream(tid, streamURL, debug = False):
 
 if __name__ == "__main__":
 
-	streamURLS = ['http://128.61.31.176:8080/video', 'http://128.61.125.170:8080/video']
+	streamURLS = ['http://128.61.31.176:8080/video', 'http://128.61.26.166:8080/video']
 
-	for i in range(1):
+	for i in range(NUM_CAMS):
 		worker = threading.Thread(target = runStream, args = (i, streamURLS[i]))
 		worker.daemon = False
 		worker.start()

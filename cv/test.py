@@ -1,30 +1,28 @@
 #!/usr/bin/env python
 import numpy as np
 import cv2
-<<<<<<< HEAD
 import utils
 import urllib 
 
 def testCam():
 	sourceTop = utils.SingleCameraHardware(0) # Init top camera
-=======
-from utils import SingleCameraHardware
 
-if __name__ == "__main__":
+	from utils import SingleCameraHardware
 
-	sourceTop = SingleCameraHardware(0) # Init top camera
->>>>>>> ae5e51228dd8c0bc4ffab6a7db5db5710652ebbf
-	sourceTop.loadCalibrationData()
+	if __name__ == "__main__":
 
-	while True:
+		sourceTop = SingleCameraHardware(0) # Init top camera
+		sourceTop.loadCalibrationData()
 
-		sourceTop.update(Display=True)
+		while True:
 
-		if cv2.waitKey(1) == 113:
-			break
+			sourceTop.update(Display=True)
 
-	sourceTop.release()
-<<<<<<< HEAD
+			if cv2.waitKey(1) == 113:
+				break
+
+		sourceTop.release()
+
 
 def testLoadVideoFromFile():
 	source = cv2.VideoCapture('testVideo/suitcaseFront.mp4')
@@ -81,6 +79,3 @@ if __name__ == "__main__":
 	#testCam()
 	# testLoadVideoFromFile()
 	streamVideoFromWeb()
-
-=======
->>>>>>> ae5e51228dd8c0bc4ffab6a7db5db5710652ebbf
