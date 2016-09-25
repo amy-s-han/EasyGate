@@ -25,8 +25,8 @@ socket.on('passenger_information_update', function(pass) {
 
 
 socket.on('new_overhead_volume', function(percent) {
-    value = percent.toFixed(0);
-    $("#progressBarText").text(value);
+    value = (percent.percentage * 100).toFixed(0);
+    $("#progressBarText").text(value  + "% full");
     $("#progressBar").css({width: value + "%"});
 });
 
