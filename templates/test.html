@@ -9,7 +9,7 @@
 
 		// Send a json message
         socket.on('connect', function() {
-            socket.emit('flight_info_query', { flightnumber: '1988'} );
+            socket.emit('initiate_scan', { flightnumber: '1988'} );
         });
 
 
@@ -22,7 +22,7 @@
         socket.on('flight_info_query_fail', function(msg) {
             console.log(msg.error);
         });
-        
+
 	</script>
 
 </head>

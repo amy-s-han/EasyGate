@@ -4,7 +4,10 @@ import urllib2
 import datetime
 import json
 import config
+import time
 
+initScan = False
+result = None
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -47,6 +50,7 @@ simpleBinDims["E75"] = (24,16,10,20,1)
 # Current flight number
 flightNumber = 1988
 
+
 # Current time
 now = datetime.datetime.now()
 
@@ -55,41 +59,63 @@ if __name__ == '__main__':
 
 @app.route('/')
 def index():
-    return render_template('estimator.html')
+    return render_template('test.html')
+
+
+@socketio.on('my_event')
+def handle_my_event(json):
+    print "Received my event data"
 
 @socketio.on('flight_info_query')
 def handle_my_flight_info_query(json):
-   	flightnumber = json['flightnumber']
-   	flightStatusJSON = getFlightStatus(flightnumber)
-   	if flightStatusJSON != None:
-   		aircraftType = getAircraftType(flightStatusJSON)
-   		if aircraftType in simpleBinDims:	
-
+    flightnumber = json['flightnumber']
+    flightStatusJSON = getFlightStatus(flightnumber)
+    if flightStatusJSON != None:
+        aircraftType = getAircraftType(flightStatusJSON)
+        if aircraftType in simpleBinDims:	
             dimensions = simpleBinDims[aircraftType]
-            
-   			print aircraftType, " has these dimensions: ", simpleBinDims[aircraftType]
-   		else:
-   			emit('flight_info_query_fail', { "error": "No dimension info on that flight's aircraft"})
-   		#print aircraftType, dim 
-   	else:
-   		emit('flight_info_query_fail', { "error": "That flight number does not exist"})
+            volume = 1
+            for element in dimensions:
+                volume = volume*element
+            totalOverHeadVolume = volume
+            print "Volume of ", aircraftType, dimensions, " is ", volume
+        else:
+            emit('flight_info_query_fail', { "error": "No dimension info on that flight's aircraft"})
+		#print aircraftType, dim 
+    else:
+        emit('flight_info_query_fail', { "error": "That flight number does not exist"})
+
+@socketio.on('initiate_scan')
+def scan(json):
+    # Do 
+    initScan = True
+    while result == None:
+        print "nothingness"
+    print result
+    
+
+
+def updateOverheadBinStatus(newLuggageVolume):
+    currentOverHeadVolume = currentOverHeadVolume + newLuggageVolume
+    percentage = currentOverHeadVolume/totalOverHeadVolume
+    emit("new_overhead_volume", percentage)
 
 def getFlightStatus(flightNumber):
-	date = now.strftime("%Y-%m-%d")
-	url = deltaAPIBaseUrl + "status?flightNumber=" + flightNumber + "&flightOriginDate=" + date + "&apikey=" + apiKey
-	print url
-	response = urllib2.urlopen(url)
-	if response.getcode() == 200:
-		rawData = response.read()
-		jsonData = json.loads(rawData)
-		status = jsonData['flightStatusResponse']['status']
-		if status == "FAIL":
-			return None
-		return jsonData
-	else:
-		return None
+    date = now.strftime("%Y-%m-%d")
+    url = deltaAPIBaseUrl + "status?flightNumber=" + flightNumber + "&flightOriginDate=" + date + "&apikey=" + apiKey
+    print url
+    response = urllib2.urlopen(url)
+    if response.getcode() == 200:
+        rawData = response.read()
+        jsonData = json.loads(rawData)
+        status = jsonData['flightStatusResponse']['status']
+        if status == "FAIL":
+            return None
+        return jsonData
+    else:
+        return None
 
 def getAircraftType(j):
-	equipmentType = j['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['equipmentCodeDelta']
-	return equipmentType
+    equipmentType = j['flightStatusResponse']['statusResponse']['flightStatusTO']['flightStatusLegTOList']['equipmentCodeDelta']
+    return equipmentType
 
