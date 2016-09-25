@@ -33,20 +33,7 @@ def processImages(img):
 
 	if result is not None:
 		print result
-
-		# Load the original image, fetched from the URL
-		# data8uint = np.fromstring( data, np.uint8 ) # Convert string to an unsigned int array
-		# img = cv2.cvtColor( cv2.imdecode( data8uint, cv2.IMREAD_COLOR ), cv2.COLOR_BGR2RGB )
-
-		# in reverse order: lowest confidence -> highest confidence
-		# tags = sorted(result['tags'], key=lambda x: x['confidence'])
-
-		# print "\n\nNow: \n\n", tags
-
-		# ig, ax = plt.subplots(figsize=(15, 20))
-		# ax.imshow( img )
-		# cvk2.labelAndWaitForKey(img, 'img')
-
+	
 	return result
 
 def idLuggage(img):
@@ -55,7 +42,7 @@ def idLuggage(img):
 
 	msResults = processImages(img)
 
-	if msResults is not []:
+	if msResults is not None:
 
 		# in reverse order: lowest confidence -> highest confidence
 		tags = sorted(msResults['tags'], key=lambda x: x['confidence'])
@@ -74,8 +61,11 @@ def idLuggage(img):
 			print i
 
 			if i in luggageTypes:
-				if 
+				if i in bagTypes:
+					luggagePresent.append(i)
+					break
 				luggagePresent.append(i)
+				break
 
 	return luggagePresent
 
