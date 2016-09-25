@@ -1,27 +1,27 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, emit
 import urllib2
 import datetime
 import json
 import config
 import time
+import socket
+import struct 
 
 initScan = False
 result = None
 
 app = Flask(__name__)
-socketio = SocketIO(app)
-
 deltaAPIBaseUrl = 'https://demo30-test.apigee.net/v1/hack/'
 apiKey = config.deltaKey
+socketio = SocketIO(app)
 
 currentOverHeadVolume = 0
-currentLuggageVolume = 0
 totalOverHeadVolume = 0
+luggageCount = (0, 0)
 
-# Dict to store type to volume mapping
+# Dict to store plane type to volume mapping
 simpleBinDims = dict()
-
 simpleBinDims["M90"] = (55,15,12,39,1)
 simpleBinDims["M88"] = (54,20,11,36,1)
 simpleBinDims["738"] = (58,15,12,33,1)
@@ -48,6 +48,11 @@ simpleBinDims["ER3"] = (63,20,9,22, 1)
 simpleBinDims["E70"] = (24,16,10,18,1)
 simpleBinDims["E75"] = (24,16,10,20,1)
 
+# Dict to store luggage type to volume mapping
+simpleLuggageDims = dict()
+simpleLuggageDims["bag"] = (9, 14, 22)
+simpleLuggageDims["suitcase"] = (9, 14, 22)
+
 # Current flight number
 flightNumber = 1988
 
@@ -58,14 +63,35 @@ now = datetime.datetime.now()
 if __name__ == '__main__':
     socketio.run(app)
 
-@app.route('/')
-def index():
+@app.route("/")
+def hello():
     return render_template('test.html')
 
+@app.route('/submitCVResult', methods=['POST'])
+def submitCVResult():
+    resultJSON = request.json
+    typeOfBag = resultJSON['result']
 
-@socketio.on('my_event')
-def handle_my_event(json):
-    print "Received my event data"
+    volume = 1
+    dimensions = simpleLuggageDims[typeOfBag]
+    for val in dimensions:
+        volume = volume * val
+
+    updateOverheadBinStatus(volume)
+
+    if typeOfBag == "bag":
+        luggageCount = (luggageCount[0], luggageCount[1] + 1)
+    else:
+        luggageCount = (luggageCount[0] + 1, luggageCount[1])
+    
+    emit("updated_luggage_count", { "bags": luggageCount[1], "suitcases": luggageCount[0] })
+
+    return "lol"
+
+@socketio.on('start_cv')
+def handle_start_cv(json):
+    # Start CV thread
+    pass
 
 @socketio.on('flight_info_query')
 def handle_my_flight_info_query(json):
@@ -87,12 +113,14 @@ def handle_my_flight_info_query(json):
         emit('flight_info_query_fail', { "error": "That flight number does not exist"})
 
 @socketio.on('initiate_scan')
-def scan(json):
-    # Do 
-    initScan = True
-    while result == None:
-        print "nothingness"
-    print result
+def handle_initiate_scan(json):
+
+    ip = config.CVip # CV's ip address
+    port = config.CVport
+    message = "TAKEPIC"
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(message, (ip, port))
+
     
 @socketio.on('override_request')
 def handle_override_request(json):
@@ -100,7 +128,7 @@ def handle_override_request(json):
     if approved == True:
         updateOverheadBinStatus()
 
-def updateOverheadBinStatus():
+def updateOverheadBinStatus(currentLuggageVolume):
     currentOverHeadVolume = currentOverHeadVolume + currentLuggageVolume
     percentage = currentOverHeadVolume/totalOverHeadVolume
     emit("new_overhead_volume", percentage)
