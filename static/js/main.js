@@ -30,6 +30,11 @@ socket.on('new_overhead_volume', function(percent) {
     $("#progressBar").css({width: value + "%"});
 });
 
+socket.on('updated_luggage_count', function(counts) {
+    $("#suitcase").val(counts.suitcases);
+    $("#bag").val(counts.bags);
+});
+
 
 
 function str_pad_left(string,pad,length) {
