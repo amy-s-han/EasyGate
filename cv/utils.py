@@ -143,6 +143,37 @@ class WhiteLightTracker:
             cv2.imshow(('Center Located '+self.source.name),self.BlurredImage)
         return self.maxLoc
 
+
+class simpleBlobTracker:
+    def __init__(self, source):
+        self.source = source
+        self.detector = cv2.SimpleBlobDetector()
+        # self.fgbg = cv2.BackgroundSubtractorMOG()
+
+
+    def blobMaker(self, frame, Display=False):
+        # convert to grayscale
+        display_gray = np.empty((frame.shape[0], frame.shape[1]), 'uint8')
+        cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY, display_gray)
+        
+        # fgmask = self.fgbg.apply(frame)
+
+        # cv2.imshow('frame',fgmask)
+        # k = cv2.waitKey(30) & 0xff
+
+        # Detect blobs.
+        keypoints = self.detector.detect(display_gray)
+        
+        # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+        frame_with_keypoints = cv2.drawKeypoints(display_gray, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+        # Show keypoints
+        if Display:
+            cv2.imshow("Keypoints", frame_with_keypoints)
+            cv2.waitKey(0)
+
+
+
 # Some code with help from http://docs.opencv.org/master/df/d9d/tutorial_py_colorspaces.html
 class ColoredBlobTracker:
     def __init__(self,source):
@@ -154,23 +185,23 @@ class ColoredBlobTracker:
         self.topOfRange = self.sample+self.HSVTolerance
         self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(20,20))
 
-    def convertHSV(self,Display=False):
-        self.HSVframe = cv2.cvtColor(self.source.frame, cv2.COLOR_BGR2HSV)
+    def convertHSV(self, frame, Display=False):
+        self.HSVframe = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         if Display:
             cv2.imshow('HSVconvert',self.HSVframe)
 
-    def blobMaker(self,Display=False):
-        self.convertHSV()
+    def blobMaker(self, frame, Display=False):
+        self.convertHSV(frame)
         self.mask = cv2.inRange(self.HSVframe, self.botOfRange, self.topOfRange)
         self.mask = cv2.morphologyEx(self.mask, cv2.MORPH_CLOSE, self.kernel)
-        self.maskedFrame = cv2.bitwise_and(self.source.frame,self.source.frame,mask= self.mask)
+        self.maskedFrame = cv2.bitwise_and(frame, frame, mask = self.mask)
 
         if Display:
-            cv2.imshow(('Mask '+self.source.name),self.maskedFrame)
+            cv2.imshow(('Mask and orig'),self.maskedFrame)
 
-    def tracking(self, Display=False):
-        self.blobMaker(Display=False)
+    def tracking(self, frame, Display=False):
+        self.blobMaker(frame, Display)
         (self.contours, _) = cv2.findContours(self.mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         self.contours = sorted(self.contours, key = cv2.contourArea, reverse = True)
         #print len(self.contours) # Says the number of found contours (not necessarily valid ones...)
@@ -183,11 +214,14 @@ class ColoredBlobTracker:
                 self.centroidX = int(self.biggestBlob['m10']/self.biggestBlob['m00'])
                 self.centroidY = int(self.biggestBlob['m01']/self.biggestBlob['m00'])
                 self.centerCoordinate = (self.centroidX, self.centroidY)
-                self.centerTaggedImage = self.source.frame.copy()
+                self.centerTaggedImage = frame.copy()
                 cv2.circle(self.centerTaggedImage, self.centerCoordinate,30,(19,190,19),10)
 
                 if Display:
-                    cv2.imshow(('Center Located '+self.source.name),self.centerTaggedImage)
+                    cv2.imshow(('Center Located for Blob'),self.centerTaggedImage)
+
+                self.centerTaggedImage = self.source.frame.copy()
+                cv2.circle(self.centerTaggedImage, self.centerCoordinate,30,(19,190,19),10)
 
                 return self.centerCoordinate
         #     else:
