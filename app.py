@@ -90,11 +90,6 @@ def submitCVResult():
 
     return "lol"
 
-@socketio.on('start_cv')
-def handle_start_cv(json):
-    # Start CV thread
-    pass
-
 @socketio.on('flight_info_query')
 def handle_my_flight_info_query(json):
     global totalOverHeadVolume
@@ -120,7 +115,7 @@ def handle_my_flight_info_query(json):
         emit('flight_info_query_fail', { "error": "That flight number does not exist"})
 
 @socketio.on('initiate_scan')
-def handle_initiate_scan():
+def handle_initiate_scan(json):
 
     ip = config.CVip # CV's ip address
     port = config.CVport

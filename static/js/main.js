@@ -8,7 +8,7 @@ $("#flightNumberUpdate").click(function() {
 
 $(document).keypress(function(e) {
     if(e.which == 13) {
-        socket.emit("initiate_scan");
+        socket.emit("initiate_scan", { "a": "b"});
     }
 });
 
