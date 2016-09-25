@@ -14,7 +14,9 @@ import json
 _key = 'e80f8ece393f4eebb3d98b0bb36f04d0'
 
 if __name__ == "__main__":
-	orig = cv2.imread('testPictures/noisyManWithSuitcase.jpg')
+
+	orig = cv2.imread('testPictures/manWithSuitcase0.jpg')
+
 	h = orig.shape[0] #get height
 	w = orig.shape[1] #get width
 	# cvk2.labelAndWaitForKey(orig, 'Original')
@@ -26,6 +28,10 @@ if __name__ == "__main__":
 	   
 	print "TYPE OF DATA: ", type(data)
 
+	pathToFileInDisk = 'testPictures/manWithSuitcase0.jpg'
+	with open( pathToFileInDisk, 'rb' ) as f:
+	    data = f.read()
+	    
 	# Computer Vision parameters
 	params = { 'visualFeatures' : 'Categories, Tags, Description, Faces'} 
 
@@ -60,10 +66,14 @@ if __name__ == "__main__":
 			print i
 
 		
+		msCV.renderResultOnImage( result, img )
+
+		# in reverse order: lowest confidence -> highest confidence
+		tags = sorted(result['tags'], key=lambda x: x['confidence'])
+
+		print "\n\nNow: \n\n", tags
 
 		# ig, ax = plt.subplots(figsize=(15, 20))
 		# ax.imshow( img )
 
 		cvk2.labelAndWaitForKey(img, 'img')
-
-

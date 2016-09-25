@@ -143,6 +143,7 @@ class WhiteLightTracker:
             cv2.imshow(('Center Located '+self.source.name),self.BlurredImage)
         return self.maxLoc
 
+
 class simpleBlobTracker:
     def __init__(self, source):
         self.source = source
@@ -170,7 +171,6 @@ class simpleBlobTracker:
         if Display:
             cv2.imshow("Keypoints", frame_with_keypoints)
             cv2.waitKey(0)
-
 
 
 
@@ -219,6 +219,9 @@ class ColoredBlobTracker:
 
                 if Display:
                     cv2.imshow(('Center Located for Blob'),self.centerTaggedImage)
+
+                self.centerTaggedImage = self.source.frame.copy()
+                cv2.circle(self.centerTaggedImage, self.centerCoordinate,30,(19,190,19),10)
 
                 return self.centerCoordinate
         #     else:

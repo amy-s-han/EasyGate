@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+    <title>Starter Template - Materialize</title>
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" /> </head>
+
+<body class="delta-blue">
+    <nav class="white" role="navigation">
+        <div class="nav-wrapper container"> <img id="deltalogo" src=img/deltalogo.jpg>
+            <ul class="right hide-on-med-and-down">
+                <li><a href="#">Navbar Link</a></li>
+            </ul>
+            <ul id="nav-mobile" class="side-nav">
+                <li><a href="#">Navbar Link</a></li>
+            </ul> <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a> </div>
+    </nav>
+    <div class="row">
+        <div class="col s6">
+            <div class="delta-blue white-text section no-pad-bot" id="index-banner">
+                <div class="row">
+                    <div class="col s12 m6 offset-m3">
+                        <div class="card white">
+                            <div class="card-content delta-blue-text"> <span class="card-title">Flight Info</span>
+                                <div class="row no-pad-bot">
+                                    <div class="input-field col s6"> <i class="material-icons prefix">flight</i>
+                                        <input id="flight_number" type="text">
+                                        <label for="flight_number">Flight Number</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-action delta-dark-red-text"> <a class="delta-light-blue-text" href="#">Update</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="delta-blue white-text section no-pad-bot" id="index-banner">
+                <div class="row">
+                    <div class="divider"></div>
+                    <h5 class="header center">Metrics</h5>
+                    <div class="col s12 m6">
+                        <div class="card white">
+                            <div class="card-content delta-blue-text"> <span class="card-title">General Info</span>
+                                <div class="row no-pad-bot">
+                                    <div class="input-field col s12"> <i class="material-icons prefix">people</i>
+                                        <label for="passengers_boarded" class="delta-red-text">Passengers Boarded</label>
+                                        <input id="passengers_boarded" value="59/164" type="text" class="delta-red-text" disabled> </div>
+                                    <div class="input-field col s12"> <i class="material-icons prefix">timer</i>
+                                        <label for="time_elapsed" class="delta-red-text">Time elapsed</label>
+                                        <input id="time_elapsed" value="12:43" type="text" class="delta-red-text" disabled> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m6">
+                        <div class="card white">
+                            <div class="card-content delta-blue-text"> <span class="card-title">Bag Count</span>
+                                <div class="row no-pad-bot">
+                                    <div class="input-field col s3"> <i class="material-icons prefix">work</i>
+                                        <label for="suitcase" class="delta-red-text">Suitcase</label>
+                                        <input id="suitcase" value="24" type="text" class="delta-red-text" disabled> </div>
+                                    <div class="input-field col s3"> <i class="material-icons prefix">work</i>
+                                        <label for="backpack" class="delta-red-text">Backpack</label>
+                                        <input id="backpack" value="16" type="text" class="delta-red-text" disabled> </div>
+                                    <div class="input-field col s3"> <i class="material-icons prefix">work</i>
+                                        <label for="suitcase" class="delta-red-text">Duffel bag</label>
+                                        <input id="suitcase" value="12" type="text" class="delta-red-text" disabled> </div>
+                                    <div class="input-field col s3"> <i class="material-icons prefix">work</i>
+                                        <label for="backpack" class="delta-red-text">Purse</label>
+                                        <input id="backpack" value="29" type="text" class="delta-red-text" disabled> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12">
+                        <div class="card white">
+                            <div class="card-content delta-blue-text"> <span class="card-title">Overhead Bin Capacity</span>
+                                <div class="container">
+                                    <div class="row no-pad-bot">
+                                        <div class="col s3">
+                                            <h6 style="font-size: 1.5em;">70% Full</h6></div>
+                                        <div class="progress container col s9 grey lighten-2" style="height: 2em;">
+                                            <div class="determinate delta-medium-blue" style="width: 70%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col s6">
+            <div class="delta-blue white-text section no-pad-bot" id="index-banner">
+                <div class="row">
+                    <div class="col s12 m6 offset-m3">
+                        <div class="card white">
+                            <div class="card-content delta-blue-text"> <span class="card-title">Current Passenger</span>
+                                <div class="row no-pad-bot">
+                                    <div class="input-field col s6"> <i class="material-icons prefix">person</i>
+                                        <label for="passenger_name" class="delta-red-text">Name</label>
+                                        <input id="passenger_name" value="Shelby Rowe" type="text" class="delta-red-text" disabled> </div>
+                                    <div class="input-field col s6"> <i class="material-icons prefix">flight_land</i>
+                                        <label for="passenger_destination" class="delta-red-text">Final Destination</label>
+                                        <input id="passenger_destination" value="ATL" type="text" class="delta-red-text" disabled> </div>
+                                    <div class="input-field col s6"> <i class="material-icons prefix">star</i>
+                                        <label for="passenger_class" class="delta-red-text">Class</label>
+                                        <input id="passenger_class" value="First" type="text" class="delta-red-text" disabled> </div>
+                                    <div class="input-field col s6"> <i class="material-icons prefix">airline_seat_recline_normal</i>
+                                        <label for="passenger_seat" class="delta-red-text">Seat</label>
+                                        <input id="passenger_seat" value="A1" type="text" class="delta-red-text" disabled> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="delta-blue hide white-text section no-pad-bot" id="index-banner">
+                <div class="row">
+                    <div class="col s12 m6 offset-m3">
+                        <div class="card green">
+                            <div class="card-content delta-blue-text"> <span class="card-title">Gate Check Info</span>
+                                <div class="row no-pad-bot">
+                                    <h6 style="font-size: 1.5em;">Bags may be taken onto aircraft</h6></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="delta-blue white-text section no-pad-bot" id="index-banner">
+                <div class="row">
+                    <div class="col s12 m6 offset-m3">
+                        <div class="card delta-red">
+                            <div class="card-content white-text"> <span class="card-title">Gate Check Info</span>
+                                <div class="row no-pad-bot">
+                                    <h6 style="font-size: 1.5em;">Bags must be gate checked</h6></div>
+                            </div>
+                            <div class="card-action delta-dark-red-text"> <a class="white-text" href="#">Override and allow</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    </div>
+    <!--<footer class="delta-red page-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col l6 s12">
+                <h5 class="white-text">Company Bio</h5>
+                <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
+            </div>
+            <div class="col l3 s12">
+                <h5 class="white-text">Settings</h5>
+                <ul>
+                    <li><a class="white-text" href="#!">Link 1</a></li>
+                    <li><a class="white-text" href="#!">Link 2</a></li>
+                    <li><a class="white-text" href="#!">Link 3</a></li>
+                    <li><a class="white-text" href="#!">Link 4</a></li>
+                </ul>
+            </div>
+            <div class="col l3 s12">
+                <h5 class="white-text">Connect</h5>
+                <ul>
+                    <li><a class="white-text" href="#!">Link 1</a></li>
+                    <li><a class="white-text" href="#!">Link 2</a></li>
+                    <li><a class="white-text" href="#!">Link 3</a></li>
+                    <li><a class="white-text" href="#!">Link 4</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container"> Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a> </div>
+    </div>
+</footer>-->
+    <!--  Scripts-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/init.js"></script>
+</body>
+
+</html>
