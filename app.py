@@ -16,6 +16,7 @@ deltaAPIBaseUrl = 'https://demo30-test.apigee.net/v1/hack/'
 apiKey = config.deltaKey
 
 currentOverHeadVolume = 0
+currentLuggageVolume = 0
 totalOverHeadVolume = 0
 
 # Dict to store type to volume mapping
@@ -93,10 +94,14 @@ def scan(json):
         print "nothingness"
     print result
     
+@socketio.on('override_request')
+def handle_override_request(json):
+    approved = json['approved']
+    if approved == True:
+        updateOverheadBinStatus()
 
-
-def updateOverheadBinStatus(newLuggageVolume):
-    currentOverHeadVolume = currentOverHeadVolume + newLuggageVolume
+def updateOverheadBinStatus():
+    currentOverHeadVolume = currentOverHeadVolume + currentLuggageVolume
     percentage = currentOverHeadVolume/totalOverHeadVolume
     emit("new_overhead_volume", percentage)
 
