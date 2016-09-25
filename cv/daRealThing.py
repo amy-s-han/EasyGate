@@ -1,3 +1,18 @@
+########################################################################
+# File: daRealThing.py - launches parallel threads to stream multiple live web
+#	feeds to count baggage types and predict overhead space capacity at  
+#   boarding gates. When the ticket agent scans a ticket, a message is sent to
+#   us through udp and the threads each grab a frame from their respective 
+#   camera feeds and sends them to Microsoft's Cognitive Services Computer
+#   Vision API for tagging and captioning. If there is a suitcase or bag in the
+#   picture, this program sends this information over to the ticket agent so 
+#   that he/she can be informed about how full the overhead bins are and decide
+#   whether the piece of luggage should be checked in.
+# 
+# Author: Amy Han
+# Geogia Tech Hackathon September 2017
+########################################################################
+
 #!/usr/bin/env python
 import sys
 sys.path.append('../cvk2')
@@ -137,13 +152,15 @@ def runStream(tid, streamURL, debug = False):
 	stream = urllib.urlopen(streamURL)
 	bytes = ''
 
-	ip = "0.0.0.0"
-	port = 5005
+	if tid == 0:
 
-	sock = socket.socket(socket.AF_INET, # Internet
-	         socket.SOCK_DGRAM) # UDP
-	sock.bind((ip, port))
-	sock.setblocking(0)
+		ip = "0.0.0.0"
+		port = 5005
+
+		sock = socket.socket(socket.AF_INET, # Internet
+		         socket.SOCK_DGRAM) # UDP
+		sock.bind((ip, port))
+		sock.setblocking(0)
 
 	print "here2"
 
@@ -159,16 +176,17 @@ def runStream(tid, streamURL, debug = False):
 			img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
 
 			cv2.imshow('img ' + str(tid), img)
+			if tid == 0:
 
-			# Check to see if the ticket agent has scanned a ticket:
-			try:
-				data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-				if data == "TAKEPIC": # ticket was scanned! Go process the picture!
-					# print "hi"
-					luggagePresent = idLuggage(img)
-					sendToTicketAgent(luggagePresent)
-			except:
-				pass
+				# Check to see if the ticket agent has scanned a ticket:
+				try:
+					data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+					if data == "TAKEPIC": # ticket was scanned! Go process the picture!
+						# print "hi"
+						luggagePresent = idLuggage(img)
+						sendToTicketAgent(luggagePresent)
+				except:
+					pass
 
 			# to exit press ESC!
 			if cv2.waitKey(1) == 27:
