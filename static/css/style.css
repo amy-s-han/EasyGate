@@ -18,6 +18,10 @@
 }
 
 
+#progressBar {
+    width: 25%;
+}
+
 .delta-blue {
 	background-color: #003466 !important;
 }
