@@ -24,8 +24,10 @@ socket.on('passenger_information_update', function(pass) {
 });
 
 
+var progress = 0;
 socket.on('new_overhead_volume', function(percent) {
     value = (percent.percentage * 100).toFixed(0);
+    progress = value;
     $("#progressBarText").text(value  + "% full");
     $("#progressBar").css({width: value + "%"});
 });
@@ -33,6 +35,13 @@ socket.on('new_overhead_volume', function(percent) {
 socket.on('updated_luggage_count', function(counts) {
     $("#suitcase").val(counts.suitcases);
     $("#bag").val(counts.bags);
+    if(counts.updated === "suitcase" && progress >= 80) {
+        $("#green_card").addClass("hide");
+        $("#red_card").removeClass("hide");
+    } else {
+        $("#red_card").addClass("hide");
+        $("#green_card").removeClass("hide");
+    }
 });
 
 
