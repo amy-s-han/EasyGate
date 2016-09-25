@@ -10,8 +10,10 @@ import microsoftCVHelpers as msCV
 import threading
 
 
-luggageTypes = ['suitcase', 'backpack']
+luggageTypes = ['suitcase', 'backpack', 'bag']
+bagTypes = ['bag', 'bags', 'handbag']
 _key = 'e80f8ece393f4eebb3d98b0bb36f04d0'
+NUM_CAMS = 2
 
 
 def processImages(img):
@@ -52,8 +54,7 @@ def idLuggage(img):
 	luggagePresent = []
 
 	msResults = processImages(img)
-	luggagePresent = None
-	
+
 	if msResults is not []:
 
 		# in reverse order: lowest confidence -> highest confidence
@@ -73,6 +74,7 @@ def idLuggage(img):
 			print i
 
 			if i in luggageTypes:
+				if 
 				luggagePresent.append(i)
 
 	return luggagePresent
@@ -117,9 +119,9 @@ def runStream(tid, streamURL, debug = False):
 
 if __name__ == "__main__":
 
-	streamURLS = ['http://128.61.31.176:8080/video', 'http://128.61.125.170:8080/video']
+	streamURLS = ['http://128.61.31.176:8080/video', 'http://128.61.26.166:8080/video']
 
-	for i in range(1):
+	for i in range(NUM_CAMS):
 		worker = threading.Thread(target = runStream, args = (i, streamURLS[i]))
 		worker.daemon = False
 		worker.start()
