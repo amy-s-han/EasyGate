@@ -20,13 +20,13 @@ Check us out on [DevPost](http://devpost.com/software/easygate)! We won 3rd in D
 ## Running
 ### Set up your config.py
 In config.py
-- Add these contents to config.py and save 
+- Add these contents and save 
 ```
 deltaKey = 'your delta api key'
 CVip = 'the ip of the computer running the CV code'
 CVport = the port number of the computer running the CV code as an integer
 ```
-In daRealThing.py...
+In daRealThing.py
 - Set the camera ip/port - `streamURLS`
 - Set the ip/port of the webapp - `webpageIP`
 - Add the Microsoft Cognitive Services API Key - `_key`
