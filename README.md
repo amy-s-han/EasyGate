@@ -16,15 +16,17 @@ Minimizes boarding time at the gate and ensures on time departures by predicting
 
 ## Running
 ### Set up your config.py
-- Create a config.py in the same directory as app.py
-- Add these contents and save
+In config.py
+- Add these contents to config.py and save 
 ```
 deltaKey = 'your delta api key'
 CVip = 'the ip of the computer running the CV code'
 CVport = the port number of the computer running the CV code as an integer
 ```
-- Set the camera IP/port in daRealThing.py - `streamURLS`
-- Set the ip/port of the webapp in daRealThing.py - `webpageIP`
+In daRealThing.py...
+- Set the camera ip/port - `streamURLS`
+- Set the ip/port of the webapp - `webpageIP`
+- Add the Microsoft Cognitive Services API Key - `_key`
 
 ### Run the webapp
 ```
