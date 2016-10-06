@@ -1,6 +1,9 @@
 # EasyGate
-Minimizes boarding time at the gate and ensures on time departures by predicting and preventing overhead bin overflow
+Minimizes boarding time at the gate and ensures on time departures by predicting and preventing overhead bin overflow. 
 ![alt tag](http://i.imgur.com/ieNjdcM.png)
+We use image recognition to identify the types of luggage (bag, backpack, suitcase, etc.) each passenger possesses. Once the type of luggage is known, an estimation of its dimension is used to calculate the amount of space it will take in the overhead compartments. As the overhead capacity fills up, the gate agent can monitor the capacity status on his/her monitor and make smart decisions about whether or not a bag should be checked in.
+
+Check us out on [DevPost](http://devpost.com/software/easygate)
 
 ## The Stack
 - OpenCV
