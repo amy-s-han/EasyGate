@@ -21,8 +21,10 @@ Minimizes boarding time at the gate and ensures on time departures by predicting
 ```
 deltaKey = 'your delta api key'
 CVip = 'the ip of the computer running the CV code'
-CVport = 'the port number of the computer running the CV code
+CVport = the port number of the computer running the CV code as an integer
 ```
+- Set the camera IP/port in daRealThing.py - `streamURLS`
+- Set the ip/port of the webapp in daRealThing.py - `webpageIP`
 
 ### Run the webapp
 ```
@@ -35,3 +37,5 @@ The webapp should served on http://localhost:5000
 ```
 $ python daRealThing.py
 ```
+
+Pressing the enter key with your computer focused on the webapp page will trigger the CV code 
