@@ -7,3 +7,13 @@ Minimizes boarding time at the gate and ensures on time departures by predicting
 - Flask
 - Socket.io
 - Microsoft Cognitive Services API
+
+## Dependencies
+- Flask
+- Flask-SocketIO 
+
+## Running
+```
+$ export FLASK_APP=app.py
+$ flask run --host=0.0.0.0
+```
